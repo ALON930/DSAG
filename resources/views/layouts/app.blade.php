@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Data Science Academy Group</title>
+    <link href="{{ ('build/assets/app-DgIaPBo6.css') }}" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -303,5 +304,6 @@
             </a>
         </div>
     </footer>
+    <script src="{{ ('build/assets/app-BuG9aa18.js ') }}"></script>
 </body>
 </html>
