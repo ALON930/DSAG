@@ -64,7 +64,16 @@ class AdminController extends Controller
     public function modifierCompte(Request $request, $id)
     {
         $compte = Compte::findOrFail($id);
-        $compte->update($request->all());
+        
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenoms' => 'required|string|max:255',
+            'adresse' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255',
+            'telephone' => 'required|string|max:20',
+        ]);
+        
+        $compte->update($validated);
         return redirect()->route('admin.dashboard')->with('success', 'Compte modifié.');
     }
 

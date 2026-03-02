@@ -29,10 +29,10 @@ class ConditionsController extends Controller
             'adresse' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
             'telephone' => 'required|string|max:20',
-            'dispo' => 'required|string',
-            'niveau' => 'required|string',
-            'PC' => 'required|string',
-            'Droits_de_formation' => 'required|string',
+            'dispo' => 'required|string|in:oui,non',
+            'niveau' => 'required|string|in:oui,non',
+            'PC' => 'required|string|in:oui,non',
+            'Droits_de_formation' => 'required|string|in:oui,non',
         ]);
 
         $postulant = Postulant::where('email', Auth::user()->email)->first();

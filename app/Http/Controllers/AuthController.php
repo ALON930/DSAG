@@ -15,7 +15,7 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('Auth.login');
     }
 
     /**
@@ -58,7 +58,7 @@ class AuthController extends Controller
      */
     public function showRegisterForm()
     {
-        return view('auth.register');
+        return view('Auth.register');
     }
 
     /**
@@ -81,7 +81,7 @@ class AuthController extends Controller
             'adresse' => $validated['adresse'] ?? null,
             'email' => $validated['email'],
             'telephone' => $validated['telephone'],
-            'password' => $validated['password'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         Auth::login($compte);

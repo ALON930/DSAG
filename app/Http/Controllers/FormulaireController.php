@@ -23,10 +23,10 @@ class FormulaireController extends Controller
     {
         // Validation des réponses
         $validated = $request->validate([
-            'q1' => 'required|string',
-            'q2' => 'required|string',
-            'q3' => 'required|string',
-            'q4' => 'required|string',
+            'q1' => 'required|string|in:oui,non',
+            'q2' => 'required|string|in:oui,non',
+            'q3' => 'required|string|in:oui,non',
+            'q4' => 'required|string|in:oui,non',
         ]);
 
         // Récupérer l'utilisateur connecté

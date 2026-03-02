@@ -7,23 +7,12 @@ use App\Http\Controllers\ConditionsController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Auth;
 
-// Page d'accueil
+// Page d'accueil (public)
 Route::get('/', function () {
     return view('accueil');
 })->name('accueil');
 
-// Formulaire
-Route::get('/formulaire', [FormulaireController::class, 'showForm'])->name('formulaire');
-Route::post('/formulaire', [FormulaireController::class, 'submitForm'])->name('formulaire.submit');
-
-// Inscription
-Route::get('/inscription', function () {
-    return auth()->check()
-        ? redirect()->route('formulaire')
-        : redirect()->route('login');
-})->name('inscription');
-
-// Authentification
+// Authentification (public)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -37,11 +26,25 @@ Route::post('/logout', function () {
     return redirect()->route('login');
 })->name('logout');
 
-// Conditions
-Route::get('/conditions', [ConditionsController::class, 'show'])->name('conditions');
-Route::post('/conditions', [ConditionsController::class, 'store'])->name('conditions.store');
-Route::put('/conditions/update', [ConditionsController::class, 'update'])->name('conditions.update');
-Route::get('/merci', [ConditionsController::class, 'merci'])->name('merci');
+// Inscription (public)
+Route::get('/inscription', function () {
+    return auth()->check()
+        ? redirect()->route('formulaire')
+        : redirect()->route('login');
+})->name('inscription');
+
+// Utilisateurs connectés (protected)
+Route::middleware(['auth'])->group(function () {
+    // Formulaire
+    Route::get('/formulaire', [FormulaireController::class, 'showForm'])->name('formulaire');
+    Route::post('/formulaire', [FormulaireController::class, 'submitForm'])->name('formulaire.submit');
+
+    // Conditions
+    Route::get('/conditions', [ConditionsController::class, 'show'])->name('conditions');
+    Route::post('/conditions', [ConditionsController::class, 'store'])->name('conditions.store');
+    Route::put('/conditions/update', [ConditionsController::class, 'update'])->name('conditions.update');
+    Route::get('/merci', [ConditionsController::class, 'merci'])->name('merci');
+});
 
 // Tableau de bord admin
 Route::middleware(['auth:admin'])->group(function () {
