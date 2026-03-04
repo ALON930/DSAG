@@ -39,14 +39,17 @@ RUN apt-get update && apt-get install -y \
 # PHP prod
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copier uniquement les fichiers de dépendances d'abord
+COPY composer.json composer.lock ./
 
-# App
+# Installer les dépendances (sans lancer les scripts qui utilisent artisan)
+RUN composer install --no-dev --no-scripts --no-autoloader
+
+# Maintenant copier le reste du code
 COPY . .
 
-# PHP deps
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Finaliser l'autoloader et lancer les scripts artisan
+RUN composer dump-autoload --optimize --no-dev
 
 # Permissions
 RUN mkdir -p storage bootstrap/cache && \
