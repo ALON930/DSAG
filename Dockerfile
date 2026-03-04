@@ -5,6 +5,7 @@ FROM php:8.4-fpm
 
 WORKDIR /app
 
+# 1. Installation des dépendances système
 RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
@@ -32,38 +33,36 @@ RUN apt-get update && apt-get install -y \
         opcache \
         intl \
         mbstring \
-        xml \
     && rm -rf /var/lib/apt/lists/*
+# Note : 'xml' a été retiré de la liste car il est déjà présent par défaut dans l'image PHP 8.4
 
+# 2. AJOUT CRUCIAL : Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# PHP prod
+# 3. Configuration PHP
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Copier uniquement les fichiers de dépendances d'abord
+# 4. Gestion des dépendances PHP (Layer Caching)
 COPY composer.json composer.lock ./
-
-# Installer les dépendances (sans lancer les scripts qui utilisent artisan)
 RUN composer install --no-dev --no-scripts --no-autoloader
 
-# Maintenant copier le reste du code
+# 5. Copie du code source
 COPY . .
 
-# Finaliser l'autoloader et lancer les scripts artisan
+# 6. Finalisation Composer
 RUN composer dump-autoload --optimize --no-dev
 
-# Permissions
+# 7. Permissions
 RUN mkdir -p storage bootstrap/cache && \
     chown -R www-data:www-data /app && \
     chmod -R 775 storage bootstrap/cache
 
-# Nginx
+# 8. Nginx & Supervisor
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-# Supervisor
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Entrypoint
+# 9. Entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
