@@ -10,13 +10,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create()
-
     ->withMiddleware(function (Middleware $middleware) {
-    $middleware->trustProxies(at: '*');
-    });
+        // C'est ici que l'on règle l'erreur de votre formulaire non sécurisé
+        $middleware->trustProxies(at: '*'); 
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
+        //
+    })->create();
